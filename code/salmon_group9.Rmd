@@ -11,6 +11,8 @@ knitr::opts_chunk$set(echo = TRUE)
 library(here)
 library(tidyverse)
 library(janitor)
+library(lubridate)
+library(tsibble)
 ```
 
 ## Overview
@@ -40,6 +42,21 @@ This “Time series” tab should contain:
 - A finalized, static graph of adult passage for coho, jack coho, and steelhead salmon (you decide if these all occupy the same panel, or if they are in separate panels). Add a figure caption. Replace NA values with zero. 
 - 2-3 bulletpoints summarizing major patterns / notable trends in the salmon passage time series data
 -Remember: All code that you used to wrangle the data and prepare the graphs should be available to see if we click on the Code buttons. 
+
+```{r}
+#initial wrangling, making sure salmon columns are numeric and NAs are replaced with 0. Also converting date column from a character class to a date character using lubridate
+tab1_data <- salmon_data_full %>% 
+  select("steelhead", "coho", "jack_coho", "date") %>% 
+  mutate_all(~replace(., is.na(.), 0)) %>% 
+  mutate(date = mdy(date))
+
+#making data into a time series using tsibble
+tab1_ts <- tab1_data %>% 
+  mutate(yearmonth = tsibble:: yearmonth(date)) %>% 
+  as_tibble(key = NULL, index = yearmonth)
+  
+```
+
 
 ### (Tab 2) Seasonplots {.tabset}
 
