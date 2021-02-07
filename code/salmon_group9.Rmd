@@ -2,7 +2,9 @@
 title: "Salmon Group Task"
 author: "Ian Brunjes, Gavriella	Keyles, Dani Sclafani"
 date: "2/3/2021"
-output: html_document
+output: 
+  html_document:
+    code_folding: hide
 ---
 
 ```{r setup, include=FALSE}
