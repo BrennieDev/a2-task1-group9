@@ -2,7 +2,9 @@
 title: "Salmon Group Task"
 author: "Ian Brunjes, Gavriella	Keyles, Dani Sclafani"
 date: "2/3/2021"
-output: html_document
+output: 
+  html_document:
+    code_folding: hide
 ---
 
 ```{r setup, include=FALSE}
@@ -11,6 +13,9 @@ knitr::opts_chunk$set(echo = TRUE)
 library(here)
 library(tidyverse)
 library(janitor)
+library(lubridate)
+library(tsibble)
+library(patchwork)
 ```
 
 ## Overview
@@ -41,6 +46,62 @@ This “Time series” tab should contain:
 - 2-3 bulletpoints summarizing major patterns / notable trends in the salmon passage time series data
 -Remember: All code that you used to wrangle the data and prepare the graphs should be available to see if we click on the Code buttons. 
 
+```{r, flipper, warning=FALSE}
+#initial wrangling, selecting for desired species, making sure salmon columns are numeric and NAs are replaced with 0. Also converting date column from a character class to a date character using lubridate package
+tab1_data <- salmon_data_full %>% 
+  select("steelhead", "coho", "jack_coho", "date") %>% 
+  mutate_all(~replace(., is.na(.), 0)) %>% 
+  mutate(date = mdy(date)) %>% 
+  mutate(year = year(date))
+
+# creating column of total sum of salmon
+tab1_data$salmon_sum <- rowSums(tab1_data[,1:3], na.rm = TRUE)
+
+#making data into a time series using tsibble
+tab1_ts <- tab1_data %>% 
+  mutate(yearmonth = tsibble:: yearmonth(date)) %>% 
+  as_tibble(key = NULL, index = yearmonth)
+  
+```
+
+
+```{r, warning=FALSE}
+# visualizing the time series data
+#steelheads
+sh_graph <- ggplot(data = tab1_ts, aes(x = date, y = steelhead ))+
+  geom_line(color = "blue") +
+  labs(x = " ", y = "Steelhead")+
+  theme_minimal()
+
+sh_graph
+
+#coho
+coho_graph <- ggplot(data = tab1_ts, aes(x = date, y = coho ))+
+  geom_line(color = "navy")+
+  labs(x = " ", y = "Coho")+
+  theme_minimal()
+
+# jack coho
+jcoho_graph <- ggplot(data = tab1_ts, aes(x = date, y = jack_coho ))+
+  geom_line(color = "cyan3")+
+  labs(x = " ", y = "Jack Coho")+
+  theme_minimal()
+
+total_graph <- (jcoho_graph | coho_graph) / sh_graph
+
+```
+
+```{r, warning=FALSE,  fig.cap= "Figure 1: Jack Coho, Coho, and Steelhead salmon recorded monthly from January 2001 through December 2010 in  Willamette Falls, Oregon."}
+
+total_graph +plot_layout() + 
+  plot_annotation(title = "Time Series of Jack Coho, Coho, and Steelhead Salmon") +
+  theme(plot.title = element_text(hjust =0.5))
+```
+ - According to Figure 1, there appears to be seasonality in the observances of Jack Coho, Coho, and Steelhead salmon. The peak number of observances for Jack Coho and Coho salmon look to occur at later months of the year, while Steelhead salmon observances peak around the middle of the year.
+ - Steelhead Salmon have the most consistent overall seasonality, however, they experienced a particularly high number of observations in 2004 followed by a decline in 2005. Observations of Steelhead salmon have  become relatively consistent from 2006 through 2010, with 2010 experincing slightly higher number of observations
+ - The overall trend of Coho Salmon seems to have fluctuated over the years. First increasing from 2001-2004, then decreasing up until 2007, where there was a strong peak, before a decline in 2007. There appears to be a strong upward trend from 2008-2010.
+ - Jack Coho salmon follow a similar trend as Coho Salmon, first increasing in the number of observations from 2001-2003, then decreasing  until 2007 where observations saw a relatively high number of Jack Coho salmon before returning to a low level in 2007 and then reaching a maximum number of observations in late 2008. Jack coho observations then declined in 2009 and then slightly increased in 2010.
+ 
 ### (Tab 2) Seasonplots {.tabset}
 
 This “Seasonplots” tab should contain: 
