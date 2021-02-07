@@ -2,15 +2,20 @@
 title: "Salmon Group Task"
 author: "Ian Brunjes, Gavriella	Keyles, Dani Sclafani"
 date: "2/3/2021"
-output: html_document
+output: 
+  html_document: 
+    css: bootstrap.css
+    code_folding: hide
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, cache = FALSE)
 
 library(here)
 library(tidyverse)
 library(janitor)
+library(lubridate)
+library(scales)
 ```
 
 ## Overview
@@ -26,14 +31,13 @@ This “Overview” section (above the tabs) should contain, in whatever order y
 
 ## Data Analysis {.tabset}
 
+### (Tab 1) Original Time Series 
+
 ```{r}
 # Read in salmon data from csv and clean names
 salmon_data_full <- read_csv(here("data", "willamette_fish_passage.csv"))%>%
   clean_names()
 ```
-
-
-### (Tab 1) Original Time Series 
 
 This “Time series” tab should contain: 
 
@@ -56,3 +60,42 @@ This “Summary statistics and analysis” tab should contain:
 - A finalized figure of annual totals for fish passage, for each of the 3 species (coho, jack coho, steelhead). You decide if this is in a single panel, or multiple panels. Add a figure caption. 
 - Add 2-3 bulletpoints summarizing major trends you see in the annual totals by species from 2000 - 2010.
 - Remember: All code that you used to wrangle the data and prepare the graphs should be available to see if we click on the Code buttons. 
+
+```{r, fig.align="center"}
+
+# clean the data for this part of anaylsis by selecting for desired species, pivoting to long format
+
+tab3_data <- salmon_data_full %>% 
+  select("steelhead", "coho", "jack_coho", "date") %>% 
+  drop_na() %>% 
+  mutate(date = mdy(date)) %>% 
+  mutate(year = lubridate::year(date)) %>% 
+  select(!date) %>% 
+  pivot_longer(1:3, names_to = "species", values_to = "count") %>% 
+  uncount(count) %>% 
+  mutate(species = str_to_sentence(species)) %>% 
+  mutate(species = str_replace(species, "Jack_coho", "Jack Coho")) %>% 
+  mutate(year = as.Date(as.character(year),format = "%Y"))
+
+# set some colors for plotting
+
+salmon_colors = c("coral", "gray75", "salmon")
+
+# make a plot
+
+ggplot() +
+  geom_bar(data = tab3_data, aes(x = year, group = species, fill = species), stat="count", position = "dodge") +
+  facet_wrap(~species, scales = "free_y") +
+  theme_minimal() +
+  scale_fill_manual(values = salmon_colors) +
+  labs(fill = "Species",
+       title = "Annual Salmon Counts by Species",
+       y = "Count",
+       x = "") +
+  scale_y_continuous(labels = comma_format()) +
+  scale_x_date(date_labels = "'%y") +
+  theme(plot.title = element_text(hjust = 0.5))
+  
+```
+
+
