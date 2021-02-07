@@ -68,22 +68,22 @@ tab1_ts <- tab1_data %>%
 ```{r, warning=FALSE}
 # visualizing the time series data
 #steelheads
-sh_graph <- ggplot(data = tab1_ts, aes(x = yearmonth, y = steelhead ))+
-  geom_line() +
+sh_graph <- ggplot(data = tab1_ts, aes(x = date, y = steelhead ))+
+  geom_line(color = "blue") +
   labs(x = " ", y = "Steelhead")+
   theme_minimal()
 
 sh_graph
 
 #coho
-coho_graph <- ggplot(data = tab1_ts, aes(x = yearmonth, y = coho ))+
-  geom_line()+
+coho_graph <- ggplot(data = tab1_ts, aes(x = date, y = coho ))+
+  geom_line(color = "navy")+
   labs(x = " ", y = "Coho")+
   theme_minimal()
 
 # jack coho
-jcoho_graph <- ggplot(data = tab1_ts, aes(x = yearmonth, y = jack_coho ))+
-  geom_line()+
+jcoho_graph <- ggplot(data = tab1_ts, aes(x = date, y = jack_coho ))+
+  geom_line(color = "cyan3")+
   labs(x = " ", y = "Jack Coho")+
   theme_minimal()
 
@@ -91,13 +91,17 @@ total_graph <- (jcoho_graph | coho_graph) / sh_graph
 
 ```
 
-```{r, warning=FALSE,  fig.cap= "Figure 1: Jack Coho, Coho, and Steelhead salmon recorded monthly from January 2001 through December 2010 in  Willamette Falls."}
+```{r, warning=FALSE,  fig.cap= "Figure 1: Jack Coho, Coho, and Steelhead salmon recorded monthly from January 2001 through December 2010 in  Willamette Falls, Oregon."}
 
 total_graph +plot_layout() + 
-  plot_annotation(title = "Time Series of Jack Coho, Coho, and Steelhead Salmon")
+  plot_annotation(title = "Time Series of Jack Coho, Coho, and Steelhead Salmon") +
+  theme(plot.title = element_text(hjust =0.5))
 ```
-
-
+ - According to Figure 1, there appears to be seasonality in the observances of Jack Coho, Coho, and Steelhead salmon. The peak number of observances for Jack Coho and Coho salmon look to occur at later months of the year, while Steelhead salmon observances peak around the middle of the year.
+ - Steelhead Salmon have the most consistent overall seasonality, however, they experienced a particularly high number of observations in 2004 followed by a decline in 2005. Observations of Steelhead salmon have  become relatively consistent from 2006 through 2010, with 2010 experincing slightly higher number of observations
+ - The overall trend of Coho Salmon seems to have fluctuated over the years. First increasing from 2001-2004, then decreasing up until 2007, where there was a strong peak, before a decline in 2007. There appears to be a strong upward trend from 2008-2010.
+ - Jack Coho salmon follow a similar trend as Coho Salmon, first increasing in the number of observations from 2001-2003, then decreasing  until 2007 where observations saw a relatively high number of Jack Coho salmon before returning to a low level in 2007 and then reaching a maximum number of observations in late 2008. Jack coho observations then declined in 2009 and then slightly increased in 2010.
+ 
 ### (Tab 2) Seasonplots {.tabset}
 
 This “Seasonplots” tab should contain: 
