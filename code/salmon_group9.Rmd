@@ -2,7 +2,9 @@
 title: "Salmon Group Task"
 author: "Ian Brunjes, Gavriella	Keyles, Dani Sclafani"
 date: "2/3/2021"
-output: html_document
+output:
+  html_document:
+    code_folding: hide
 ---
 
 ```{r setup, include=FALSE}
@@ -11,6 +13,10 @@ knitr::opts_chunk$set(echo = TRUE)
 library(here)
 library(tidyverse)
 library(janitor)
+library(lubridate)
+library(tsibble)
+library(feasts)
+library(patchwork)
 ```
 
 ## Overview
@@ -49,10 +55,44 @@ This “Seasonplots” tab should contain:
 - Add 2-3 bulletpoints summarizing the major trends you see in the seasonplots.
 - Remember: All code that you used to wrangle the data and prepare the graphs should be available to see if we click on the Code buttons. 
 
+```{r}
+# Massage data for time series
+season_data <- salmon_data_full %>%
+  mutate_all(~replace(., is.na(.), 0)) %>% 
+  mutate(datetime = mdy(date)) %>%
+  mutate(coho = as.numeric(coho)) %>% 
+  mutate(jack_coho = as.numeric(jack_coho)) %>% 
+  mutate(steelhead = as.numeric(steelhead))
+
+# Subset of ts for coho
+coho_ts <- season_data %>% 
+  select(datetime, coho) %>% 
+  as_tsibble(key = NULL, index = datetime)
+
+# Subset of ts for jack_coho
+jack_coho_ts <- season_data %>% 
+  select(datetime, jack_coho) %>% 
+  as_tsibble(key = NULL, index = datetime)
+
+# Subset of ts for steelhead
+steelhead_ts <- season_data %>% 
+  select(datetime, steelhead) %>% 
+  as_tsibble(key = NULL, index = datetime)
+
+# Build plots for each species
+coho <- coho_ts %>% gg_season()
+jack <- jack_coho_ts %>% gg_season()
+steel <- steelhead_ts %>% gg_season()
+
+# Display plots using patchwork
+(coho/jack/steel) & theme_minimal() + theme(legend.position = "none")
+```
+
+
 ### (Tab 3) Annual counts by species {.tabset}
 
 This “Summary statistics and analysis” tab should contain: 
 
 - A finalized figure of annual totals for fish passage, for each of the 3 species (coho, jack coho, steelhead). You decide if this is in a single panel, or multiple panels. Add a figure caption. 
 - Add 2-3 bulletpoints summarizing major trends you see in the annual totals by species from 2000 - 2010.
-- Remember: All code that you used to wrangle the data and prepare the graphs should be available to see if we click on the Code buttons. 
+- Remember: All code that you used to wrangle the data and prepare the graphs should be available to see if we click on the Code buttons.
