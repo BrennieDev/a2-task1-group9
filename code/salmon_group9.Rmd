@@ -22,16 +22,17 @@ library(patchwork)
 library(wesanderson)
 ```
 
+
 ## Overview
 
 Fish species traveling through Willamette river to the Columbia River Basin are recorded daily. Steelhead, Coho, and Jack Coho salmon are three of the species recorded by Columbia Basin Research. The dataset used in this exploration includes the number of fish observed daily, for each fish species from 2001-2010.^1^ This report attempts to find seasonal and overall trends of the number of each fish species observed traveling from the Wilamette River to the Columbia river using time series modeling.
 
 
-```{r, fig.cap= " Image 1.0: Map of Columbia River basin, displaying the Willamette River in the top left corner of Oregon and its connection to the Columbia River. The fish species present in the rivers feeding into the Columbia River basin are listed, including the status of the species, either endangered or threatened.^2^"}
+```{r, fig.align = "center", fig.cap= " Image 1.0: Map of Columbia River basin, displaying the Willamette River in the top left corner of Oregon and its connection to the Columbia River. The fish species present in the rivers feeding into the Columbia River basin are listed, including the status of the species, either endangered or threatened.^2^"}
 knitr::include_graphics(here("river_map.jpeg"))
 ```
 
-```{r, fig.cap= " Image 2.0: Willamette Falls, Oregon. The site of the fish ladder where daily counts of passing salmon are collected and aggregated.^3^"}
+```{r, fig.align = "center", fig.cap= " Image 2.0: Willamette Falls, Oregon. The site of the fish ladder where daily counts of passing salmon are collected and aggregated.^3^"}
 knitr::include_graphics(here("willamette_falls.jpg"))
 ```
 
@@ -46,7 +47,7 @@ salmon_data_full <- read_csv(here("data", "willamette_fish_passage.csv"))%>%
   clean_names()
 ```
 
-```{r, warning=FALSE,  fig.cap= "Figure 1: Jack Coho, Coho, and Steelhead salmon recorded monthly from January 2001 through December 2010 in  Willamette Falls, Oregon."}
+```{r, warning=FALSE,  fig.align="center", fig.cap= "Figure 1: Jack Coho, Coho, and Steelhead salmon recorded monthly from January 2001 through December 2010 in  Willamette Falls, Oregon."}
 
 #initial wrangling, selecting for desired species, making sure salmon columns are numeric and NAs are replaced with 0. Also converting date column from a character class to a date character using lubridate package
 tab1_data <- salmon_data_full %>% 
@@ -67,20 +68,20 @@ tab1_ts <- tab1_data %>%
 # visualizing the time series data
 #steelheads
 sh_graph <- ggplot(data = tab1_ts, aes(x = date, y = steelhead ))+
-  geom_line(color = "gray75") +
+  geom_line(color = "salmon") +
   labs(x = " ", y = "Steelhead")+
   theme_minimal()
 
 
 #coho
 coho_graph <- ggplot(data = tab1_ts, aes(x = date, y = coho ))+
-  geom_line(color = "coral")+
+  geom_line(color = "gray75")+
   labs(x = " ", y = "Coho")+
   theme_minimal()
 
 # jack coho
 jcoho_graph <- ggplot(data = tab1_ts, aes(x = date, y = jack_coho ))+
-  geom_line(color = "salmon")+
+  geom_line(color = "coral")+
   labs(x = " ", y = "Jack Coho")+
   theme_minimal()
 
@@ -99,7 +100,7 @@ total_graph +plot_layout() +
  
 ### Seasonplots {.tabset}
 
-```{r  message=FALSE, fig.cap= "Figure 2: Jack Coho, Coho, and Steelhead salmon seasonal observations for years 2001-2010 in  Willamette Falls, Oregon."}
+```{r  message=FALSE, fig.align="center", fig.cap= "Figure 2: Jack Coho, Coho, and Steelhead salmon seasonal observations for years 2001-2010 in  Willamette Falls, Oregon."}
 # Massage data for time series
 season_data <- salmon_data_full %>%
   mutate_all(~replace(., is.na(.), 0)) %>% 
@@ -152,13 +153,7 @@ jack <- jack_coho_ts %>% gg_season(pal= wes_palette("GrandBudapest1", type = "co
 
 ### Annual counts by species {.tabset}
 
-This “Summary statistics and analysis” tab should contain: 
-
-- A finalized figure of annual totals for fish passage, for each of the 3 species (coho, jack coho, steelhead). You decide if this is in a single panel, or multiple panels. Add a figure caption. 
-- Add 2-3 bulletpoints summarizing major trends you see in the annual totals by species from 2000 - 2010.
-- Remember: All code that you used to wrangle the data and prepare the graphs should be available to see if we click on the Code buttons. 
-
-```{r, fig.align="center"}
+```{r}
 
 # clean the data for this part of anaylsis by selecting for desired species, pivoting to long format
 
@@ -172,7 +167,8 @@ tab3_data <- salmon_data_full %>%
   uncount(count) %>% 
   mutate(species = str_to_sentence(species)) %>% 
   mutate(species = str_replace(species, "Jack_coho", "Jack Coho")) %>% 
-  mutate(year = as.Date(as.character(year),format = "%Y"))
+  mutate(year = as.Date(as.character(year),format = "%Y")) %>% 
+  mutate(species = fct_relevel(species, levels = c("Jack Coho", "Coho", "Steelhead")))
 
 # set some colors for plotting
 
@@ -180,7 +176,7 @@ salmon_colors = c("coral", "gray75", "salmon")
 
 # make a plot
 
-ggplot() +
+plot3 <- ggplot() +
   geom_bar(data = tab3_data, aes(x = year, group = species, fill = species), stat="count", position = "dodge") +
   facet_wrap(~species, scales = "free_y") +
   theme_minimal() +
@@ -192,9 +188,21 @@ ggplot() +
   scale_y_continuous(labels = comma_format()) +
   scale_x_date(date_labels = "'%y") +
   theme(plot.title = element_text(hjust = 0.5))
-  
 ```
 
+
+```{r, fig.align = "center", fig.cap = "Figure 3: Annual Counts of Jack Coho, Coho and Steelhead Salmon in Willamette Falls, Oregon, 2001-2010."}
+
+# render plot
+
+plot3
+
+```
+
+- Coho salmon were significantly more abundant than other species in 2009 and 2010. The Coho salmon population exploded around this time, with considerably more salmon of this species recorded in 2009 and 2010 compared with other years.
+- Jack Coho salmon appear to have resurgences and declines in population in different years.
+- Steelhead salmon appear to have had a particularly abundant year in 2002, with stability or declines at lowers levels in other years. 
+- Cyclicality is not apparent for Coho and Steelhead salmon, though may be relevant for Jack Coho.
 
 
 ## Data & Image Sources
@@ -204,3 +212,4 @@ ggplot() +
 ^2^Federal agencies release final Columbia River System Operations environmental impact state. (n.d.). Northwestern Division. Retrieved February 7, 2021, from https://www.nwd.usace.army.mil/Media/News-Releases/Article/2295683/federal-agencies-release-final-columbia-river-system-operations-environmental-i/
 
 ^3^ Willamette Falls Fish Counts. (n.d.). Oregon Department of Fish & Wildlife. Retrieved February 7, 2021, from http://www.cbr.washington.edu/dart/query/adult_graph_text
+
