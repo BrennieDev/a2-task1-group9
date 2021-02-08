@@ -72,20 +72,20 @@ tab1_ts <- tab1_data %>%
 # visualizing the time series data
 #steelheads
 sh_graph <- ggplot(data = tab1_ts, aes(x = date, y = steelhead ))+
-  geom_line(color = "blue") +
+  geom_line(color = "gray75") +
   labs(x = " ", y = "Steelhead")+
   theme_minimal()
 
 
 #coho
 coho_graph <- ggplot(data = tab1_ts, aes(x = date, y = coho ))+
-  geom_line(color = "navy")+
+  geom_line(color = "coral")+
   labs(x = " ", y = "Coho")+
   theme_minimal()
 
 # jack coho
 jcoho_graph <- ggplot(data = tab1_ts, aes(x = date, y = jack_coho ))+
-  geom_line(color = "cyan3")+
+  geom_line(color = "salmon")+
   labs(x = " ", y = "Jack Coho")+
   theme_minimal()
 
