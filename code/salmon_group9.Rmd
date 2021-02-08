@@ -170,13 +170,6 @@ tab3_data <- salmon_data_full %>%
   mutate(year = as.Date(as.character(year),format = "%Y")) %>% 
   mutate(species = fct_relevel(species, levels = c("Jack Coho", "Coho", "Steelhead")))
 
-# take a closer look at summary data 
-
-# salmon_summary <- tab3_data %>% 
-  # group_by(species, year) %>% 
-  # summarize(n()) %>% 
-  # mutate(year = year(year))
-
 # set some colors for plotting
 
 salmon_colors = c("coral", "gray75", "salmon")
@@ -195,23 +188,10 @@ plot3 <- ggplot() +
   scale_y_continuous(labels = comma_format()) +
   scale_x_date(date_labels = "'%y") +
   theme(plot.title = element_text(hjust = 0.5))
-  
-plot3_sameaxes <- ggplot() +
-  geom_bar(data = tab3_data, aes(x = year, group = species, fill = species), stat="count", position = "dodge") +
-  facet_wrap(~species) +
-  theme_minimal() +
-  scale_fill_manual(values = salmon_colors) +
-  labs(fill = "Species",
-       title = "Annual Salmon Counts by Species",
-       y = "Count",
-       x = "") +
-  scale_y_continuous(labels = comma_format()) +
-  scale_x_date(date_labels = "'%y") +
-  theme(plot.title = element_text(hjust = 0.5))
 ```
 
 
-```{r, fig.align = "center", fig.cap = "Figure 3: Annual Counts of Jack Coho, Coho and Steelhead Salmon in Wallamette Falls, Oregon, 2001-2010."}
+```{r, fig.align = "center", fig.cap = "Figure 3: Annual Counts of Jack Coho, Coho and Steelhead Salmon in Willamette Falls, Oregon, 2001-2010."}
 
 # render plot
 
@@ -222,6 +202,7 @@ plot3
 - Coho salmon were significantly more abundant than other species in 2009 and 2010. The Coho salmon population exploded around this time, with considerably more salmon of this species recorded in 2009 and 2010 compared with other years.
 - Jack Coho salmon appear to have resurgences and declines in population in different years.
 - Steelhead salmon appear to have had a particularly abundant year in 2002, with stability or declines at lowers levels in other years. 
+- Cyclicality is not apparent for Coho and Steelhead salmon, though may be relevant for Jack Coho.
 
 
 ## Data & Image Sources
