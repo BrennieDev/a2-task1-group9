@@ -31,6 +31,16 @@ This “Overview” section (above the tabs) should contain, in whatever order y
 - A professionally formatted data citation
 - Remember: All code that you used to wrangle the data and prepare the graphs should be available to see if we click on the Code buttons. 
 
+Fish species traveling through Willamette river to the Columbia River Basin are recorded daily. Steelhead, Coho, and Jack Coho salmon are three of the species recorded by Columbia Basin Research. The dataset used in this exploration includes the number of fish observed daily, for each fish species from 2001-2010. This report attempts to find seasonal and overall trends of the number of each fish species observed traveling from the Wilamette River to the Columbia river using time series modeling.
+
+
+```{r, fig.cap= " Image 1.0: Map of Columbia River basin, displaying the Wilamette River in the top left corner of Oregon and its connection to the Columbia River. The fish species present in the rivers feeding into the Columbia River basin are listed, including the status of the species, either endangered or threatened"}
+knitr::include_graphics(here("river_map.jpeg"))
+
+```
+Image Citation: Federal agencies release final Columbia River System Operations environmental impact state. (n.d.). Northwestern Division. Retrieved February 7, 2021, from https://www.nwd.usace.army.mil/Media/News-Releases/Article/2295683/federal-agencies-release-final-columbia-river-system-operations-environmental-i/
+
+
 
 ## Data Analysis {.tabset}
 ### Original Time Series 
@@ -62,19 +72,20 @@ tab1_ts <- tab1_data %>%
 # visualizing the time series data
 #steelheads
 sh_graph <- ggplot(data = tab1_ts, aes(x = date, y = steelhead ))+
-  geom_line(color = "blue") +
+  geom_line(color = "gray75") +
   labs(x = " ", y = "Steelhead")+
   theme_minimal()
 
+
 #coho
 coho_graph <- ggplot(data = tab1_ts, aes(x = date, y = coho ))+
-  geom_line(color = "navy")+
+  geom_line(color = "coral")+
   labs(x = " ", y = "Coho")+
   theme_minimal()
 
 # jack coho
 jcoho_graph <- ggplot(data = tab1_ts, aes(x = date, y = jack_coho ))+
-  geom_line(color = "cyan3")+
+  geom_line(color = "salmon")+
   labs(x = " ", y = "Jack Coho")+
   theme_minimal()
 
