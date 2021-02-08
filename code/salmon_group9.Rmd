@@ -19,28 +19,23 @@ library(scales)
 library(tsibble)
 library(feasts)
 library(patchwork)
+library(wesanderson)
 ```
 
 ## Overview
 
-This “Overview” section (above the tabs) should contain, in whatever order you choose: 
-
-- An engaging image (with caption, including photo credit) that is relevant to the dataset
-- A brief summary (3 - 4 sentences) of the dataset, and what is included in this “report”
-- A map of the fish ladder location (you can make this in R on your own, or include an existing map appropriately licensed, with attribution)
-- A professionally formatted data citation
-- Remember: All code that you used to wrangle the data and prepare the graphs should be available to see if we click on the Code buttons. 
-
-Fish species traveling through Willamette river to the Columbia River Basin are recorded daily. Steelhead, Coho, and Jack Coho salmon are three of the species recorded by Columbia Basin Research. The dataset used in this exploration includes the number of fish observed daily, for each fish species from 2001-2010. This report attempts to find seasonal and overall trends of the number of each fish species observed traveling from the Wilamette River to the Columbia river using time series modeling.
+Fish species traveling through Willamette river to the Columbia River Basin are recorded daily. Steelhead, Coho, and Jack Coho salmon are three of the species recorded by Columbia Basin Research. The dataset used in this exploration includes the number of fish observed daily, for each fish species from 2001-2010.^1^ This report attempts to find seasonal and overall trends of the number of each fish species observed traveling from the Wilamette River to the Columbia river using time series modeling.
 
 
-```{r, fig.cap= " Image 1.0: Map of Columbia River basin, displaying the Wilamette River in the top left corner of Oregon and its connection to the Columbia River. The fish species present in the rivers feeding into the Columbia River basin are listed, including the status of the species, either endangered or threatened"}
+```{r, fig.cap= " Image 1.0: Map of Columbia River basin, displaying the Willamette River in the top left corner of Oregon and its connection to the Columbia River. The fish species present in the rivers feeding into the Columbia River basin are listed, including the status of the species, either endangered or threatened.^2^"}
 knitr::include_graphics(here("river_map.jpeg"))
-
 ```
-Image Citation: Federal agencies release final Columbia River System Operations environmental impact state. (n.d.). Northwestern Division. Retrieved February 7, 2021, from https://www.nwd.usace.army.mil/Media/News-Releases/Article/2295683/federal-agencies-release-final-columbia-river-system-operations-environmental-i/
 
+```{r, fig.cap= " Image 2.0: Willamette Falls, Oregon. The site of the fish ladder where daily counts of passing salmon are collected and aggregated.^3^"}
+knitr::include_graphics(here("willamette_falls.jpg"))
+```
 
+---
 
 ## Data Analysis {.tabset}
 ### Original Time Series 
@@ -129,17 +124,17 @@ steelhead_ts <- season_data %>%
   as_tsibble(key = NULL, index = datetime)
 
 # Build season plots for each species
-coho <- coho_ts %>% gg_season() +
+coho <- coho_ts %>% gg_season(pal= wes_palette("GrandBudapest1", type = "continuous", 10)) +
   theme_minimal() +
   theme(legend.position = "none") +
   labs(y = "Coho", x = "")
 
-jack <- jack_coho_ts %>% gg_season() +
+jack <- jack_coho_ts %>% gg_season(pal= wes_palette("GrandBudapest1", type = "continuous", 10)) +
   theme_minimal() +
   theme(legend.position = "none") +
   labs(y = "Jack Coho", x = "")
 
-  steel <- steelhead_ts %>% gg_season() +
+  steel <- steelhead_ts %>% gg_season(pal= wes_palette("GrandBudapest1", type = "continuous", 10)) +
   theme_minimal() +
   theme(legend.position = "none") +
   labs(y = "Steelhead", x = "")
@@ -199,3 +194,13 @@ ggplot() +
   theme(plot.title = element_text(hjust = 0.5))
   
 ```
+
+
+
+## Data & Image Sources
+
+^1^Columbia River DART,	Columbia Basin Research, University of Washington. 2021. Adult Passage Graphics & Text. Available from http://www.cbr.washington.edu/dart/query/adult_graph_text
+
+^2^Federal agencies release final Columbia River System Operations environmental impact state. (n.d.). Northwestern Division. Retrieved February 7, 2021, from https://www.nwd.usace.army.mil/Media/News-Releases/Article/2295683/federal-agencies-release-final-columbia-river-system-operations-environmental-i/
+
+^3^ Willamette Falls Fish Counts. (n.d.). Oregon Department of Fish & Wildlife. Retrieved February 7, 2021, from http://www.cbr.washington.edu/dart/query/adult_graph_text
